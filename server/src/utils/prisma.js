@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { PrismaClient } = require('@prisma/client');
 
 let prisma;
@@ -5,14 +6,12 @@ let prisma;
 // If Turso / libSQL environment variables are provided (Production on Vercel)
 if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
   const { PrismaLibSQL } = require('@prisma/adapter-libsql');
-  const { createClient } = require('@libsql/client');
 
-  const libsql = createClient({
+  const adapter = new PrismaLibSQL({
     url: process.env.TURSO_DATABASE_URL,
     authToken: process.env.TURSO_AUTH_TOKEN,
   });
 
-  const adapter = new PrismaLibSQL(libsql);
   prisma = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
