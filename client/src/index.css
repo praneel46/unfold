@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-paper: #FDFBF7;
+    --bg-surface: #F7F4EE;
+    --border-subtle: #E8E2D7;
+    --text-primary: #1A1816;
+    --text-secondary: #6B645A;
+  }
+
+  .dark {
+    --bg-paper: #11100F;
+    --bg-surface: #191716;
+    --border-subtle: #2C2825;
+    --text-primary: #F5F2EB;
+    --text-secondary: #A39D92;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg-paper);
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* Accessible focus indicators for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid #E05638;
+    outline-offset: 2px;
+  }
+
+  /* Editorial custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(140, 130, 120, 0.25);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(140, 130, 120, 0.45);
+  }
+
+  /* Hide scrollbar for clean horizontal pill bars */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Custom editorial typography utilities */
+.font-editorial-heading {
+  font-family: 'DM Serif Display', Georgia, serif;
+  letter-spacing: -0.015em;
+}
+
+.editorial-divider {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+/* Mobile Safe Areas */
+.safe-area-pb {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
+.safe-area-pt {
+  padding-top: max(0.5rem, env(safe-area-inset-top));
+}
+
+/* Unfolding page reveal animation */
+@keyframes unfoldEffect {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-unfold-reveal {
+  animation: unfoldEffect 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

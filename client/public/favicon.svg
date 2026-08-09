@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none">
+  <rect width="48" height="48" rx="12" fill="#1A1817" />
+  <!-- Underlayer / back page -->
+  <path d="M14 12C14 10.8954 14.8954 10 16 10H30C31.1046 10 32 10.8954 32 12V34C32 35.1046 31.1046 36 30 36H16C14.8954 36 14 35.1046 14 34V12Z" fill="#5E7361" opacity="0.8" />
+  <!-- Top Unfolding Layer -->
+  <path d="M18 14C18 12.8954 18.8954 12 20 12H34C35.1046 12 36 12.8954 36 14V36C36 37.1046 35.1046 38 34 38H20C18.8954 38 18 37.1046 18 36V14Z" fill="#E05638" />
+  <!-- Fold crease / light beam line -->
+  <line x1="26" y1="12" x2="26" y2="38" stroke="#FDFBF7" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3" opacity="0.6"/>
+</svg>

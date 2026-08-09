@@ -1,0 +1,128 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(uuid())
+  email         String         @unique
+  username      String         @unique
+  name          String
+  passwordHash  String
+  bio           String?        @default("")
+  location      String?        @default("")
+  website       String?        @default("")
+  avatarUrl     String?        @default("")
+  bannerUrl     String?        @default("")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  // Content relations
+  posts         Post[]
+  comments      Comment[]
+  likes         Like[]
+  bookmarks     Bookmark[]
+  
+  // Follow system: self-referential
+  following     Follow[]       @relation("UserFollowing")
+  followers     Follow[]       @relation("UserFollowers")
+  
+  // Notification relations
+  notificationsReceived Notification[] @relation("RecipientNotifications")
+  notificationsTriggered Notification[] @relation("ActorNotifications")
+}
+
+model Post {
+  id          String       @id @default(uuid())
+  content     String
+  imageUrl    String?
+  category    String?      @default("Thought") // Thought, Story, Moment, Discovery, Essay
+  published   Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  comments    Comment[]
+  likes       Like[]
+  bookmarks   Bookmark[]
+  notifications Notification[]
+}
+
+model Comment {
+  id          String       @id @default(uuid())
+  content     String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  authorId    String
+  author      User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  postId      String
+  post        Post         @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  notifications Notification[]
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+
+  followerId  String
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+
+  followingId String
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+model Bookmark {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  postId    String
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, postId])
+}
+
+model Notification {
+  id          String   @id @default(uuid())
+  type        String   // "LIKE", "COMMENT", "FOLLOW", "BOOKMARK"
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  recipientId String
+  recipient   User     @relation("RecipientNotifications", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  actorId     String
+  actor       User     @relation("ActorNotifications", fields: [actorId], references: [id], onDelete: Cascade)
+
+  postId      String?
+  post        Post?    @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  commentId   String?
+  comment     Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+}
