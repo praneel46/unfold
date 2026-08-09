@@ -8,14 +8,16 @@
     "dev:server": "npm run dev --prefix server",
     "dev:client": "npm run dev --prefix client",
     "install:all": "npm install && npm install --prefix server && npm install --prefix client",
+    "postinstall": "npm install --prefix server && npm install --prefix client",
     "build:client": "npm run build --prefix client",
-    "vercel-build": "npm run db:generate --prefix server && npm run build:client",
+    "vercel-build": "npm install --prefix server && npm install --prefix client && npm run db:generate --prefix server && npm run build:client",
     "seed": "npm run seed --prefix server",
     "db:push": "npm run db:push --prefix server",
     "db:generate": "npm run db:generate --prefix server",
     "db:studio": "npm run db:studio --prefix server"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "prisma": "6.19.3"
   }
 }
