@@ -29,6 +29,15 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 // Static uploads folder
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    service: 'UNFOLD API',
+    status: 'online',
+    version: '1.0.0',
+  });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({
