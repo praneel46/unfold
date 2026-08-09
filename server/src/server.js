@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const os = require('os');
 
 const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
@@ -15,9 +16,27 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Enable CORS
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or same-origin serverless)
+      if (!origin) return callback(null, true);
+      if (
+        allowedOrigins.includes(origin) ||
+        origin.endsWith('.vercel.app') ||
+        process.env.NODE_ENV === 'development'
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
@@ -26,8 +45,11 @@ app.use(
 app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
-// Static uploads folder
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+// Static uploads folder (uses local directory or serverless /tmp)
+const staticUploadsDir = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'uploads')
+  : path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(staticUploadsDir));
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -59,10 +81,12 @@ app.use('/api/explore', exploreRoutes);
 // Global error handler
 app.use(errorHandler);
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✨ UNFOLD API server running on port ${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
-});
+// Start server if running standalone
+if (process.env.NODE_ENV !== 'test' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`✨ UNFOLD API server running on port ${PORT}`);
+    console.log(`📡 Health check: http://localhost:${PORT}/api/health`);
+  });
+}
 
 module.exports = app;
